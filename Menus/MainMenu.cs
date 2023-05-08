@@ -31,7 +31,7 @@ namespace Flashcards.Menus {
                        ChooseStackMenu.ChooseStacksMenu();
                         break;
                     case "3":
-                        // study
+                        ChooseStudyStack.ChooseStacksMenu();
                         break;
                     case "0":
                         Console.WriteLine("\nGoodbye");

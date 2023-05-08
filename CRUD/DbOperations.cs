@@ -59,6 +59,12 @@ namespace Flashcards.CRUD {
             adapter.DeleteCommand = command;
             adapter.DeleteCommand.ExecuteNonQuery();
 
+            sql = $"DELETE study_stack2 where stack_id = {stack.Id}";
+
+            command = new SqlCommand(sql, cnn);
+            adapter.DeleteCommand = command;
+            adapter.DeleteCommand.ExecuteNonQuery();
+
             sql = $"DELETE Stack where stack_id = {stack.Id}";
 
             command = new SqlCommand(sql, cnn);
@@ -190,6 +196,43 @@ namespace Flashcards.CRUD {
 
             command.Dispose();
             cnn.Close();
+        }
+
+        internal static void SaveStudySessions(string stackId, int score) {
+
+            cnn.Open();
+
+            string sql = $"Insert into study_stack2 (date, score, stack_id) values('{DateTime.Now.Date}', '{score}', {stackId})";
+            var command = new SqlCommand(sql, cnn);
+            adapter.InsertCommand = command;
+            adapter.InsertCommand.ExecuteNonQuery();
+
+            command.Dispose();
+            cnn.Close();
+        }
+
+        internal static List<StudySessionDto> GetStudySessions(Stack stack) {
+
+
+            cnn.Open();
+            List<StudySessionDto> table = new List<StudySessionDto>();
+
+            string sql = $"SELECT * from study_stack2 WHERE stack_id = {stack.Id}";
+
+            var command = new SqlCommand(sql, cnn);
+            reader = command.ExecuteReader();
+
+            while (reader.Read()) {
+                var date = reader.GetValue(1).ToString();
+                var score = reader.GetValue(2).ToString();
+
+                StudySessionDto session = new StudySessionDto(date.Split(" ")[0], int.Parse(score), stack.Name);
+
+                table.Add(session);
+            }
+            cnn.Close();
+
+            return table;
         }
     }
 }

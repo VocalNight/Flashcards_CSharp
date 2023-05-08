@@ -2,10 +2,11 @@
 using Flashcards.CRUD;
 using Flashcards.Helpers;
 using Flashcards.Model;
-using System.Collections.Generic;
+using System;
+
 
 namespace Flashcards.Menus {
-    internal class ChooseStackMenu {
+    internal class ChooseStudyStack {
 
         internal static void ChooseStacksMenu() {
 
@@ -20,7 +21,7 @@ namespace Flashcards.Menus {
                 .ExportAndWriteLine();
 
             HelpersAndValidation.InsertSeparator();
-            Console.WriteLine("This is the menu to manage the stacks.\n");
+            Console.WriteLine("This is the menu to choose a stack for a study session.\n");
             Console.WriteLine("Type the name of a stack or exit (0)\n");
 
             while (managing) {
@@ -32,8 +33,7 @@ namespace Flashcards.Menus {
                         break;
                     default:
                         if (stacks.Any(stack => stack.Name == op)) {
-                            Console.Clear();
-                           ManageStackMenu.ManageStack(stacks.Find(stack => stack.Name == op));
+                            ManageStudySessionMenu.ManageStudySessions(stacks.Find(stack => stack.Name == op));
                         } else {
                             Console.Clear();
                             Console.WriteLine("Invalid stack name");

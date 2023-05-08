@@ -119,20 +119,22 @@ namespace Flashcards.Menus {
 
                 Console.Clear();
 
-                DbOperations.GetFlashcardsWithId(stack);
+                var list = DbOperations.GetFlashcardsWithId(stack);
+                if (list.Count == 0) {
+                    Console.WriteLine("Nothing here!");
+                }
                 HelpersAndValidation.InsertSeparator();
                 Console.WriteLine("Press 0 to go back");
 
                 string op = Console.ReadLine();
 
                 if (op == "0") {
+                    Console.Clear();
                     managing = false;
                 } else {
                     Console.WriteLine("Invalid input");
                 }
-
             }
-            ManageStack(stack);
         }
 
         static void InsertFlashcards( Stack stack ) {
