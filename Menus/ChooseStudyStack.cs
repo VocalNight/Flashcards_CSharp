@@ -2,8 +2,6 @@
 using Flashcards.CRUD;
 using Flashcards.Helpers;
 using Flashcards.Model;
-using System;
-
 
 namespace Flashcards.Menus {
     internal class ChooseStudyStack {

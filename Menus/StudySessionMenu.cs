@@ -2,11 +2,6 @@
 using Flashcards.CRUD;
 using Flashcards.Helpers;
 using Flashcards.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Flashcards.Menus {
     internal class StudySessionMenu {

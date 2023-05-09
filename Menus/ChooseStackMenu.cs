@@ -2,7 +2,6 @@
 using Flashcards.CRUD;
 using Flashcards.Helpers;
 using Flashcards.Model;
-using System.Collections.Generic;
 
 namespace Flashcards.Menus {
     internal class ChooseStackMenu {

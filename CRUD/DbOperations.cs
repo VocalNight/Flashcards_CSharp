@@ -1,5 +1,6 @@
 ﻿using ConsoleTableExt;
 using Flashcards.Model;
+using System.Data;
 using System.Data.SqlClient;
 
 
@@ -9,13 +10,95 @@ namespace Flashcards.CRUD {
         private static SqlDataReader reader;
         private static SqlDataAdapter adapter = new SqlDataAdapter();
 
-        static string dbConnection = @"Data Source=DESKTOP-SFORHI9;Initial Catalog=test;User ID=vocal;Password=spider12";
-        static SqlConnection cnn = new SqlConnection( dbConnection);
+        static string connectionString = System.Configuration.ConfigurationManager.AppSettings.Get("DbConnection");
+        static string dbFilePath = System.Configuration.ConfigurationManager.AppSettings.Get("DbFilePath");
+        static string dbName = System.Configuration.ConfigurationManager.AppSettings.Get("DbName");
+
+        static SqlConnection cnn = new SqlConnection(connectionString);
+
+        public static void Initialize() {
+            CreateDatabase();
+            CreateTables();
+        }
+
+        private static void CreateTables() {
+
+            string createStacksTable =
+                $@"IF NOT EXISTS (SELECT * FROM sysobjects
+            WHERE name='Stack' and xtype='U')
+            CREATE TABLE Stacks (
+                stack_id int NOT NULL IDENTITY PRIMARY KEY,
+                name nvarchar(50) NOT NULL)";
+
+            SqlCommand sqlCommandStacks = new SqlCommand(createStacksTable, cnn);
+
+            string createCardsTable =
+                $@"IF NOT EXISTS (SELECT * FROM sysobjects
+            WHERE name='Cards' and xtype='U')
+            CREATE TABLE Cards (
+                card_id int NOT NULL IDENTITY PRIMARY KEY,
+                front Text NOT NULL,
+                back Text NOT NULL,
+                stack_id int NOT NULL,
+                CONSTRAINT FK_StackCard FOREIGN KEY (stack_id)
+                REFERENCES Stacks(stack_id)
+                ON DELETE CASCADE
+                ON UPDATE CASCADE)";
+
+            SqlCommand sqlCommandCards = new SqlCommand(createCardsTable, cnn);
+
+            string createStudySessionsTable =
+                $@"IF NOT EXISTS (SELECT * FROM sysobjects
+            WHERE name='StudySessions' and xtype='U')
+            CREATE TABLE StudySessions (
+                study_id int NOT NULL IDENTITY PRIMARY KEY,
+                date Text NOT NULL,
+                score Text NOT NULL,
+                stack_id int NOT NULL,
+                CONSTRAINT FK_StackStudySession FOREIGN KEY (stack_id)
+                REFERENCES Stacks(stack_id)
+                ON DELETE CASCADE
+                ON UPDATE CASCADE)";
+
+            SqlCommand sqlCommandStudySessions = new SqlCommand(createStudySessionsTable, cnn);
+
+            cnn.Open();
+            sqlCommandStacks.ExecuteNonQuery();
+            sqlCommandCards.ExecuteNonQuery();
+            sqlCommandStudySessions.ExecuteNonQuery();
+
+            if (cnn.State == ConnectionState.Open) {
+                cnn.Close();
+            }
+        }
+
+        private static void CreateDatabase() {
+            SqlConnection cnn = new SqlConnection(connectionString);
+            cnn.Open();
+
+            string sqlString =
+                $@"IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '{dbName}')
+            BEGIN
+                CREATE DATABASE {dbName} ON PRIMARY
+                (NAME = {dbName}_Data, FILENAME = '{dbFilePath}{dbName}.mdf',
+                SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%)
+                LOG ON (NAME = {dbName}_log,
+                FILENAME = '{dbFilePath}{dbName}.ldf',
+                SIZE = 1MB, MAXSIZE = 5MB, FILEGROWTH = 10%)
+            END";
+
+            SqlCommand sqlCommand = new SqlCommand(sqlString, cnn);
+            sqlCommand.ExecuteNonQuery();
+
+            if (cnn.State == ConnectionState.Open) {
+                cnn.Close();
+            }
+        }
 
         public static void AddStack( string op ) {
             Console.Clear();
             cnn.Open();
-            
+
 
             string sql = $"Insert into Stack (name) values('{op}')";
             var command = new SqlCommand(sql, cnn);
@@ -38,7 +121,7 @@ namespace Flashcards.CRUD {
             reader = command.ExecuteReader();
 
             while (reader.Read()) {
-  
+
                 string id = reader.GetValue(0).ToString();
                 string name = reader.GetValue(1).ToString();
 
@@ -59,7 +142,7 @@ namespace Flashcards.CRUD {
             adapter.DeleteCommand = command;
             adapter.DeleteCommand.ExecuteNonQuery();
 
-            sql = $"DELETE study_stack2 where stack_id = {stack.Id}";
+            sql = $"DELETE StudySessions where stack_id = {stack.Id}";
 
             command = new SqlCommand(sql, cnn);
             adapter.DeleteCommand = command;
@@ -87,7 +170,7 @@ namespace Flashcards.CRUD {
             cnn.Close();
         }
 
-        public static List<CardDto> GetFlashcards(Stack stack) {
+        public static List<CardDto> GetFlashcards( Stack stack ) {
 
             cnn.Open();
 
@@ -107,10 +190,10 @@ namespace Flashcards.CRUD {
                 cards.Add(card);
             }
             cnn.Close();
-            return cards;       
+            return cards;
         }
 
-        internal static List<CardDto> GetFlashcardsWithId(Stack stack) {
+        internal static List<CardDto> GetFlashcardsWithId( Stack stack ) {
 
             Console.Clear();
 
@@ -138,7 +221,7 @@ namespace Flashcards.CRUD {
             return cards;
         }
 
-        internal static void GetCard(CardDto card) {
+        internal static void GetCard( CardDto card ) {
 
             cnn.Open();
             List<List<object>> table;
@@ -164,7 +247,7 @@ namespace Flashcards.CRUD {
             cnn.Close();
         }
 
-        internal static void UpdateCardText(bool front, string nextText, CardDto card) {
+        internal static void UpdateCardText( bool front, string nextText, CardDto card ) {
 
             cnn.Open();
             string sql;
@@ -184,7 +267,7 @@ namespace Flashcards.CRUD {
             cnn.Close();
         }
 
-        internal static void DeleteCard(string id) {
+        internal static void DeleteCard( string id ) {
 
             cnn.Open();
 
@@ -198,11 +281,11 @@ namespace Flashcards.CRUD {
             cnn.Close();
         }
 
-        internal static void SaveStudySessions(string stackId, int score) {
+        internal static void SaveStudySessions( string stackId, int score ) {
 
             cnn.Open();
 
-            string sql = $"Insert into study_stack2 (date, score, stack_id) values('{DateTime.Now.Date}', '{score}', {stackId})";
+            string sql = $"Insert into StudySessions (date, score, stack_id) values('{DateTime.Now.Date}', '{score}', {stackId})";
             var command = new SqlCommand(sql, cnn);
             adapter.InsertCommand = command;
             adapter.InsertCommand.ExecuteNonQuery();
@@ -211,13 +294,13 @@ namespace Flashcards.CRUD {
             cnn.Close();
         }
 
-        internal static List<StudySessionDto> GetStudySessions(Stack stack) {
+        internal static List<StudySessionDto> GetStudySessions( Stack stack ) {
 
 
             cnn.Open();
             List<StudySessionDto> table = new List<StudySessionDto>();
 
-            string sql = $"SELECT * from study_stack2 WHERE stack_id = {stack.Id}";
+            string sql = $"SELECT * from StudySessions WHERE stack_id = {stack.Id}";
 
             var command = new SqlCommand(sql, cnn);
             reader = command.ExecuteReader();
@@ -235,7 +318,7 @@ namespace Flashcards.CRUD {
             return table;
         }
 
-        internal static List<List<Object>> ChallengeReport( Stack stack, string year, bool total) {
+        internal static List<List<Object>> ChallengeReport( Stack stack, string year, bool total ) {
 
             cnn.Open();
             List<List<Object>> table = new List<List<Object>>();
@@ -261,14 +344,14 @@ namespace Flashcards.CRUD {
                 var december = reader.GetValue(12).ToString();
 
                 table.Add(
-                    new List<object> { name, january, february, march, april, may, june, july, 
+                    new List<object> { name, january, february, march, april, may, june, july,
                         august, september, october, november, december});
             }
             cnn.Close();
             return table;
-        } 
+        }
 
-        internal static string GetChallengeSql(string id, string year, bool total) {
+        internal static string GetChallengeSql( string id, string year, bool total ) {
 
             string filter =
                 total ? "COUNT" : "AVG";
@@ -288,7 +371,7 @@ namespace Flashcards.CRUD {
             [11] as November,
             [12] as December
             FROM (SELECT name, score, Day(date) as monthDone 
-            FROM study_stack2 s
+            FROM StudySessions s
             JOIN Stack t ON s.stack_id = t.stack_id AND YEAR(date) = '{year}' AND t.stack_id = {id}
             ) source
             PIVOT(
