@@ -43,7 +43,7 @@ namespace Flashcards.Menus {
 
             DbOperations.SaveStudySessions(stack.Id, score);
 
-            ManageStudySessionMenu.ManageStudySessions( stack );
+            ManageStudySessionMenu.ManageStudySessions(stack);
 
         }
     }

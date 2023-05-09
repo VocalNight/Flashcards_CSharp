@@ -1,7 +1,7 @@
 ﻿namespace Flashcards.Model {
     internal class Stack {
 
-        public Stack(string id, string name) {
+        public Stack( string id, string name ) {
             Id = id;
             Name = name;
         }

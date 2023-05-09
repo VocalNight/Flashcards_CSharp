@@ -1,7 +1,7 @@
 ﻿namespace Flashcards.Model {
     internal class CardDto {
 
-        public CardDto(string id, string cardFront, string cardBack) {
+        public CardDto( string id, string cardFront, string cardBack ) {
             Id = id;
             Front = cardFront;
             Back = cardBack;

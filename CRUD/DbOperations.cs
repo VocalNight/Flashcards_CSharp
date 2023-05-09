@@ -26,7 +26,7 @@ namespace Flashcards.CRUD {
             string createStacksTable =
                 $@"IF NOT EXISTS (SELECT * FROM sysobjects
             WHERE name='Stack' and xtype='U')
-            CREATE TABLE Stacks (
+            CREATE TABLE Stack (
                 stack_id int NOT NULL IDENTITY PRIMARY KEY,
                 name nvarchar(50) NOT NULL)";
 
@@ -41,7 +41,7 @@ namespace Flashcards.CRUD {
                 back Text NOT NULL,
                 stack_id int NOT NULL,
                 CONSTRAINT FK_StackCard FOREIGN KEY (stack_id)
-                REFERENCES Stacks(stack_id)
+                REFERENCES Stack(stack_id)
                 ON DELETE CASCADE
                 ON UPDATE CASCADE)";
 
@@ -56,7 +56,7 @@ namespace Flashcards.CRUD {
                 score Text NOT NULL,
                 stack_id int NOT NULL,
                 CONSTRAINT FK_StackStudySession FOREIGN KEY (stack_id)
-                REFERENCES Stacks(stack_id)
+                REFERENCES Stack(stack_id)
                 ON DELETE CASCADE
                 ON UPDATE CASCADE)";
 
@@ -73,8 +73,6 @@ namespace Flashcards.CRUD {
         }
 
         private static void CreateDatabase() {
-            SqlConnection cnn = new SqlConnection(connectionString);
-            cnn.Open();
 
             string sqlString =
                 $@"IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '{dbName}')
@@ -88,6 +86,7 @@ namespace Flashcards.CRUD {
             END";
 
             SqlCommand sqlCommand = new SqlCommand(sqlString, cnn);
+            cnn.Open();
             sqlCommand.ExecuteNonQuery();
 
             if (cnn.State == ConnectionState.Open) {
@@ -194,11 +193,10 @@ namespace Flashcards.CRUD {
         }
 
         internal static List<CardDto> GetFlashcardsWithId( Stack stack ) {
+            int id = 1;
 
             Console.Clear();
-
             List<CardDto> cards = new List<CardDto>();
-            int id = 1;
 
             cnn.Open();
 

@@ -1,9 +1,9 @@
 ﻿namespace Flashcards.Model {
     internal class StudySessionDto {
-        public StudySessionDto(string date, int score, string stackName ) {
+        public StudySessionDto( string date, int score, string stackName ) {
             Date = date;
             Score = score;
-            StackName = stackName; 
+            StackName = stackName;
         }
 
         public string StackName { get; set; }

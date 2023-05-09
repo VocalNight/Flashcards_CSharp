@@ -43,7 +43,7 @@ namespace Flashcards.Menus {
             ManageStackMenu.ManageStack(stack);
         }
 
-        static void EditFront(CardDto card) {
+        static void EditFront( CardDto card ) {
             Console.Clear();
             Console.WriteLine("What would be the new front?");
 
@@ -61,7 +61,7 @@ namespace Flashcards.Menus {
             DbOperations.UpdateCardText(false, back, card);
         }
 
-        static void DeleteChoicecard( CardDto card, Stack stack) {
+        static void DeleteChoicecard( CardDto card, Stack stack ) {
             Console.Clear();
 
             Console.WriteLine("Are you sure you want to delete this card? y/n");
@@ -69,7 +69,7 @@ namespace Flashcards.Menus {
 
             if (input == "y") {
                 DbOperations.DeleteCard(card.Id);
-                ManageStackMenu.ManageStack(stack);              
+                ManageStackMenu.ManageStack(stack);
             }
         }
     }

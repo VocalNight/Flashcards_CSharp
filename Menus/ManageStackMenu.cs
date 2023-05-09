@@ -72,7 +72,7 @@ namespace Flashcards.Menus {
             List<CardDto> DtoList = DbOperations.GetFlashcardsWithId(stack);
             List<CardDto> cards = DbOperations.GetFlashcards(stack);
             HelpersAndValidation.InsertSeparator();
-            
+
             bool managing = true;
 
             while (managing) {
@@ -94,15 +94,15 @@ namespace Flashcards.Menus {
                             Console.Clear();
                             Console.WriteLine("Invalid card id");
                             HelpersAndValidation.InsertSeparator();
-                        } 
+                        }
                         break;
                 }
             }
             ManageStack(stack);
         }
 
-        static CardDto? FindIdSelect(string op, List<CardDto> cards ) {
-           int index = int.Parse(op);
+        static CardDto? FindIdSelect( string op, List<CardDto> cards ) {
+            int index = int.Parse(op);
             index -= 1;
 
             if (index >= 0 && index <= cards.Count) {
@@ -123,6 +123,9 @@ namespace Flashcards.Menus {
                 if (list.Count == 0) {
                     Console.WriteLine("Nothing here!");
                 }
+                ConsoleTableBuilder.From(list)
+                .ExportAndWriteLine();
+
                 HelpersAndValidation.InsertSeparator();
                 Console.WriteLine("Press 0 to go back");
 
@@ -147,7 +150,9 @@ namespace Flashcards.Menus {
             Console.WriteLine("What about the back?");
             string back = Console.ReadLine();
 
-           DbOperations.CreateCard(front, back, stack);
+            DbOperations.CreateCard(front, back, stack);
+            Console.WriteLine("Card Created!");
+            HelpersAndValidation.InsertSeparator();
         }
     }
 }

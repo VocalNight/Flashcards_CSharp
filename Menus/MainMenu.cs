@@ -28,7 +28,7 @@ namespace Flashcards.Menus {
                         }
                         break;
                     case "2":
-                       ChooseStackMenu.ChooseStacksMenu();
+                        ChooseStackMenu.ChooseStacksMenu();
                         break;
                     case "3":
                         ChooseStudyStack.ChooseStacksMenu();
@@ -43,7 +43,7 @@ namespace Flashcards.Menus {
                         Console.WriteLine("Invalid input");
                         break;
                 }
-               HelpersAndValidation.InsertSeparator();
+                HelpersAndValidation.InsertSeparator();
             }
         }
 
@@ -61,7 +61,7 @@ namespace Flashcards.Menus {
             DbOperations.AddStack(op);
         }
 
-        internal static bool StackExists(string op) {
+        internal static bool StackExists( string op ) {
             List<Stack> stacks = DbOperations.ShowStacksList();
 
             return stacks.Any(stack => stack.Name == op);

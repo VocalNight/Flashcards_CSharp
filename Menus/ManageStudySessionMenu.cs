@@ -9,7 +9,7 @@ namespace Flashcards.Menus {
         internal static void ManageStudySessions( Stack stack ) {
 
             bool managing = true;
-            
+
 
             while (managing) {
 
@@ -45,11 +45,11 @@ namespace Flashcards.Menus {
             MainMenu.GetMainInput();
         }
 
-        static void ShowPastSessions(Stack stack) {
+        static void ShowPastSessions( Stack stack ) {
 
-                bool viewing = true;
+            bool viewing = true;
 
-                while (viewing) {
+            while (viewing) {
 
                 Console.Clear();
                 List<StudySessionDto> sessions = DbOperations.GetStudySessions(stack);
@@ -70,8 +70,8 @@ namespace Flashcards.Menus {
             }
         }
 
-        static void GetAdvancedReport(Stack stack) {
-            
+        static void GetAdvancedReport( Stack stack ) {
+
             bool viewing = true;
 
             while (viewing) {

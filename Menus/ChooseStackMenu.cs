@@ -32,7 +32,7 @@ namespace Flashcards.Menus {
                     default:
                         if (stacks.Any(stack => stack.Name == op)) {
                             Console.Clear();
-                           ManageStackMenu.ManageStack(stacks.Find(stack => stack.Name == op));
+                            ManageStackMenu.ManageStack(stacks.Find(stack => stack.Name == op));
                         } else {
                             Console.Clear();
                             Console.WriteLine("Invalid stack name");
