@@ -234,5 +234,66 @@ namespace Flashcards.CRUD {
 
             return table;
         }
+
+        internal static List<List<Object>> ChallengeReport( Stack stack, string year, bool total) {
+
+            cnn.Open();
+            List<List<Object>> table = new List<List<Object>>();
+
+            string sql = GetChallengeSql(stack.Id, year, total);
+
+            var command = new SqlCommand(sql, cnn);
+            reader = command.ExecuteReader();
+
+            while (reader.Read()) {
+                var name = reader.GetValue(0).ToString();
+                var january = reader.GetValue(1).ToString();
+                var february = reader.GetValue(2).ToString();
+                var march = reader.GetValue(3).ToString();
+                var april = reader.GetValue(4).ToString();
+                var may = reader.GetValue(5).ToString();
+                var june = reader.GetValue(6).ToString();
+                var july = reader.GetValue(7).ToString();
+                var august = reader.GetValue(8).ToString();
+                var september = reader.GetValue(9).ToString();
+                var october = reader.GetValue(10).ToString();
+                var november = reader.GetValue(11).ToString();
+                var december = reader.GetValue(12).ToString();
+
+                table.Add(
+                    new List<object> { name, january, february, march, april, may, june, july, 
+                        august, september, october, november, december});
+            }
+            cnn.Close();
+            return table;
+        } 
+
+        internal static string GetChallengeSql(string id, string year, bool total) {
+
+            string filter =
+                total ? "COUNT" : "AVG";
+
+            return @$"SELECT 
+            name as StackName,
+            [1] as January,
+            [2] as February,
+            [3] as March,
+            [4] as April,
+            [5] as May,
+            [6] as June,
+            [7] as July,
+            [8] as August,
+            [9] as September,
+            [10] as October,
+            [11] as November,
+            [12] as December
+            FROM (SELECT name, score, Day(date) as monthDone 
+            FROM study_stack2 s
+            JOIN Stack t ON s.stack_id = t.stack_id AND YEAR(date) = '{year}' AND t.stack_id = {id}
+            ) source
+            PIVOT(
+            	{filter}(score) FOR monthDone IN ([1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12])
+            ) AS pivottable";
+        }
     }
 }
