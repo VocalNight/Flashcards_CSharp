@@ -53,7 +53,7 @@ namespace Flashcards.CRUD {
             CREATE TABLE StudySessions (
                 study_id int NOT NULL IDENTITY PRIMARY KEY,
                 date Text NOT NULL,
-                score Text NOT NULL,
+                score int NOT NULL,
                 stack_id int NOT NULL,
                 CONSTRAINT FK_StackStudySession FOREIGN KEY (stack_id)
                 REFERENCES Stack(stack_id)
